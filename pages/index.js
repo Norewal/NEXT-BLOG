@@ -1,13 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
 import Link from 'next/link';
-import Layout from '../components/Layout';
-import Post from '../components/Post';
-import { sortByDate } from '../utils';
+import Layout from '@/components/Layout';
+import Post from '@/components/Post';
+import { getPosts } from '@/lib/posts';
 
-export default function Home({ posts }) {
-  //console.log(posts);
+export default function HomePage({ posts }) {
   return (
     <Layout>
       <h1 className='text-5xl border-b-4 p-5 font-bold'>Latest Posts</h1>
@@ -28,30 +24,9 @@ export default function Home({ posts }) {
 }
 
 export async function getStaticProps() {
-  const files = fs.readdirSync(path.join('posts'));
-  //console.log(files);
-
-  const posts = files.map((filename) => {
-    const slug = filename.replace('.md', '');
-
-    const markdownWithMeta = fs.readFileSync(
-      path.join('posts', filename),
-      'utf-8'
-    );
-    //console.log(markdownWithMeta);
-
-    const { data: frontmatter } = matter(markdownWithMeta);
-
-    return {
-      slug,
-      frontmatter,
-    };
-  });
-  //console.log(posts);
-
   return {
     props: {
-      posts: posts.sort(sortByDate).slice(0, 6),
+      posts: getPosts().slice(0, 6),
     },
   };
 }
